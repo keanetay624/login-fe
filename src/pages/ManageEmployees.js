@@ -71,12 +71,12 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function Dashboard() {
+export default function ManageEmployees() {
   const [open, setOpen] = React.useState(true);
-  const [isManager, setIsManager] = React.useState(false);
+  const [isManager, setIsManager] = React.useState(true);
   const [userName, setUserName] = useState("")
   const [fullName, setFullName] = useState("")
-  const [color, setColor] = useState("primary")
+  const [allEmployees, setAllEmployees] = useState([])
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -97,22 +97,27 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${accToken}`}
     };
 
-    axios.get(`http://localhost:8080/employee/${username}`, config)
+    axios.get(`http://localhost:8080/employee/getAll`, config)
     .then(res => {
-        setUserName(res.data.data.userName)
-        setFullName(res.data.data.fullName)
-        setIsManager(res.data.data.isManager === 1 ? true : false)
+      const employees = res.data.data
+      setAllEmployees(res.data.data)
+      const selectedEmployee = employees.filter(emp => emp.userName === username)
+      console.log('selected employee:', selectedEmployee)
+      setUserName(selectedEmployee[0].userName)
+      setFullName(selectedEmployee[0].fullName)
+
+      // render all employee data to the screen
     })
     .catch(error => {
         console.log(error)
     })
-  })
+  },[])
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open} color={isManager? "primary" : "secondary"}>
+        <AppBar position="absolute" open={open}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
@@ -137,7 +142,7 @@ export default function Dashboard() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              Manage Employees
             </Typography>
             <IconButton color="inherit" onClick={handleLogout}>
                 <LogoutIcon/>
@@ -208,15 +213,11 @@ export default function Dashboard() {
               {/* Recent Orders */}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <p>Lorem ipsum dolor sit amet, in his quando cetero deleniti. Eu enim paulo imperdiet pro. Ea propriae theophrastus eos. Probo eloquentiam vel et.
-
-Sit saepe officiis id. Movet intellegam eu vix, mel eu erant graece complectitur. Facete graecis delicatissimi sit no, cu patrioque contentiones vim, unum vituperata sea in. No dicit adipisci vim, maiorum convenire vis in, porro dicunt salutandi et mel. Vim ne quot ullum laoreet. His audiam omittantur ut.
-
-Quem natum his no, altera aeterno salutatus no nam, sed et quaeque voluptaria dissentias. Ad homero equidem perpetua eum, eos cu fugit euripidis dissentiet. Qui altera gloriatur repudiandae ne, et illum delenit assueverit sit. Eam ei eirmod gubergren evertitur, primis percipitur concludaturque ea mel, an libris persecuti eum. Pri cu porro inimicus prodesset, no regione suscipit cum.
-
-Sonet bonorum molestie et pro, eos efficiendi constituam an. Ad vim diam persius, error legendos per cu. Tation evertitur his at, nec ubique adversarium et, sea errem tation accommodare an. Nam alia verterem at. Repudiare persecuti mel te.
-
-Consul fuisset ea qui, at quo suscipit ponderum, eu option platonem sed. Graeco cotidieque et cum, sed recteque tincidunt ei. Ea vel facer partem constituto, est eripuit scribentur definitiones an. Voluptatibus concludaturque mea an. Ad pri utamur vidisse, explicari scripserit ad est. Mei in populo tacimates inimicus.</p>
+                  <h3>All Employees</h3>
+                  {<div>{allEmployees.map(employee => <p>id: {employee.id}, 
+                  userName: {employee.userName},
+                  fullName: {employee.fullName},
+                  isManager: {employee.isManager},</p>)}</div>}
                 </Paper>
               </Grid>
             </Grid>

@@ -22,6 +22,7 @@ import Copyright from './shared/Copyright';
 export default function SignIn() {
     const navigate = useNavigate();
     const [token, setToken] = useState("");
+    const [errorMsg, setErrorMsg] = useState("")
     const cookies = new Cookies();
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -40,11 +41,12 @@ export default function SignIn() {
             navigate("/dashboard");
         })
         .catch(function (error) {
-            console.log(error);
+          console.log(error);
+          if (error.response.status === 403) {
+            setErrorMsg("Invalid username or password.")
+          }
         });
   };
-
-
   return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -83,6 +85,7 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
             />
+            {errorMsg && <p style={{color:'red'}}>{errorMsg}</p>}
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
