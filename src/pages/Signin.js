@@ -16,25 +16,13 @@ import { useState } from "react"
 import axios from 'axios';
 import Cookies from "universal-cookie";
 import jwt from "jwt-decode";
+import Copyright from './shared/Copyright';
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        My Awesome Login Page
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 export default function SignIn() {
     const navigate = useNavigate();
     const [token, setToken] = useState("");
     const cookies = new Cookies();
-    const [user, setUser] = useState(null);
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -43,14 +31,13 @@ export default function SignIn() {
             password: data.get('password')
         })
         .then(function (response) {
-            console.log(response)
-            setToken(response.data);
-            const decoded = jwt(response.data)
-            setUser(decoded)
-            cookies.set("jwt_authorization", response.data, {
-            expires: new Date(decoded.exp * 1000)
+            setToken(response.data.accToken);
+            const decoded = jwt(response.data.accToken)
+            cookies.set("acc_token", response.data.accToken)
+            cookies.set("jwt_authorization", decoded, {
+                expires: new Date(decoded.exp * 1000)
             })
-            navigate("/home");
+            navigate("/dashboard");
         })
         .catch(function (error) {
             console.log(error);
