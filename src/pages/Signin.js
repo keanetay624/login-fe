@@ -43,7 +43,7 @@ export default function SignIn() {
         .catch(function (error) {
           console.log(error);
           if (error.response.status === 403) {
-            setErrorMsg("Incorrect Username or Password")
+            setErrorMsg("Invalid username or password.")
           }
         });
   };
@@ -85,7 +85,7 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
             />
-            {errorMsg && <p style={{color:'red'}}>errorMsg</p>}
+            {errorMsg && <p style={{color:'red'}}>{errorMsg}</p>}
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
